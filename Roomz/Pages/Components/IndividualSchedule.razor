@@ -1,0 +1,17 @@
+﻿@using Roomz.Data;
+
+@*@if (@schedule.AppointmentDateStart >= DateTime.Now.AddMinutes(-10) & @schedule.AppointmentDateStart <= EndOfDay)
+{*@    
+        <td scope="col">@schedule.AppointmentDateStart.ToShortTimeString()</td>
+        <td scope="col">@schedule.AppointmentDateEnd.ToShortTimeString()</td>
+        <td scope="col">@schedule.Booker.Email</td>
+        <td scope="col">@schedule.AppointmentHeading</td>
+@*}*@
+
+@code {
+    [Parameter]
+    public Schedule schedule { get; set; }
+
+    DateTime EndOfDay = DateTime.Now.AddHours(64);
+
+}

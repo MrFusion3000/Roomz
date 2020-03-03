@@ -1,0 +1,157 @@
+﻿@page "/roomzfront/{RoomId:int}"
+@using Roomz.Services;
+@using Roomz.Data;
+@using System.Threading;
+
+
+@inject ITableChangeBroadcastService ScheduleService
+@implements IDisposable
+
+@inherits OwningComponentBase<ScheduleService>
+
+
+
+@*Header with Room Name (Left) and Present Time (RIGHT)*@
+<div class="d-flex justify-content-between">
+    <div class="p-2"><h3 class="text-info">@room.Name</h3></div>
+    <div class="p-2">
+        <h3 class="text-info">
+            @DateTime.Now.ToShortTimeString()
+        </h3>
+    </div>
+</div>
+
+<br />
+<br />
+
+<div class="d-flex justify-content-center">
+    <div style="border:1px dotted">
+
+        @*//Check for current appointment in chosen room*@
+        @if (currentSchedule != null)
+        {
+            //Display time until next booked schedule
+            <div><br /><h1>Bokad just nu till : @(currentSchedule.AppointmentDateEnd.ToShortTimeString())</h1><br /></div>
+
+            //Check for a first schedule if there are also an ongoing appointment
+            @*@if (nextSchedule == null)
+            {
+                <Roomz.Pages.Components.IndividualScheduleRoomComponent nextSchedule="nextSchedule"></Roomz.Pages.Components.IndividualScheduleRoomComponent>
+            }*@
+        }
+        else
+        @*//Check for a first schedule if no ongoing appointment*@
+        @if (nextSchedule != null)
+        {
+            //Display upcoming schedules and free time to next scheduled booking
+            <div style="justify-content:center"><br /><h1>Ledigt till @nextSchedule.AppointmentDateStart.ToShortTimeString() </h1><br /></div>
+            <Roomz.Pages.Components.IndividualScheduleRoomComponent nextSchedule="nextSchedule" TRoomId="RoomId"></Roomz.Pages.Components.IndividualScheduleRoomComponent>
+        }
+        else
+        {
+            //Clean schedule rest of the day
+            <div><h1 style="justify-content:center">Ledigt resten av dagen</h1></div>
+            <Roomz.Pages.Components.IndividualScheduleRoomComponent TRoomId="RoomId"></Roomz.Pages.Components.IndividualScheduleRoomComponent>
+
+        }
+
+    </div>
+</div>
+<div><br /><br /></div>
+
+<table class="table table-hover table-dark">
+    <thead>
+        <tr>
+            <th scope="col">Start</th>
+            <th scope="col">End</th>
+            <th scope="col">Booker</th>
+            <th scope="col">Rubrik</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @*List of todays upcoming reservations for chosen room*@
+        @foreach (var schedule in schedules)
+        {
+            if (schedule.RoomId == RoomId)
+            {
+                var checkDate = schedule.AppointmentDateStart;
+                if (checkDate.Date == DateTime.Today && schedule.AppointmentDateEnd > DateTime.Now)
+                {
+                <tr>
+                    @*<Roomz.Pages.Components.IndividualSchedule schedule="schedule"></Roomz.Pages.Components.IndividualSchedule>*@
+                    <td scope="col">@schedule.AppointmentDateStart.ToShortTimeString()</td>
+                    <td scope="col">@schedule.AppointmentDateEnd.ToShortTimeString()</td>
+                    <td scope="col">@schedule.BookerEmail</td>
+                    <td scope="col">@schedule.AppointmentHeading</td>
+                </tr>
+                }
+
+            @*else
+                {
+                    <tr><td>No booked time slots today</td></tr>
+                }*@
+            }
+        }
+
+    </tbody>
+
+
+</table>
+
+@*</div>*@
+
+<div class="copyright">&copy; Copyright @DateTime.Now.Year, Nicolas Lewentorp, Powered by @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription</div>
+
+@code{
+    IList<Schedule> schedules;
+
+    [Parameter] public int RoomId { get; set; }
+
+    //int flag = 0;
+    Room room = new Room();
+    DateTime AppStart = DateTime.Now;
+    Schedule currentSchedule = new Schedule();
+    Schedule nextSchedule = new Schedule();
+
+    List<Schedule> listScheduleFromRoom = new List<Schedule>();
+
+    protected override void OnInitialized()
+    {
+        // Check for todays schedules
+        currentSchedule = Service.GetCurrentSchedule(RoomId, AppStart);
+        nextSchedule = Service.GetNextSchedule(RoomId, AppStart);
+
+        //Get room name from RoomId
+        room = Service.GetRoom(RoomId);
+
+        // Subscription to table record change
+        this.ScheduleService.OnScheduleChanged += this.ScheduleChanged;
+        this.schedules = this.ScheduleService.GetCurrentValues();
+    }
+
+    private async void ScheduleChanged(object sender, ScheduleChangeEventArgs args)
+    {
+        var recordToupdate = this.schedules.FirstOrDefault(x => x.AppointmentDateStart == args.NewValue.AppointmentDateStart);
+        if (recordToupdate == null)
+        {
+            this.schedules.Add(args.NewValue);
+        }
+        else
+        {
+            recordToupdate.AppointmentHeading = args.NewValue.AppointmentHeading;
+        }
+
+        await InvokeAsync(() =>
+        {
+            base.StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        this.ScheduleService.OnScheduleChanged += this.ScheduleChanged;
+    }
+
+}
+

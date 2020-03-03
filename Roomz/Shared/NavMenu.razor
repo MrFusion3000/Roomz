@@ -1,0 +1,88 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">Roomz</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home (Shop)
+            </NavLink>
+        </li>
+        <AuthorizeView>
+            <Authorized>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="users">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Users
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="rooms">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Rooms
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="reservation">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Reservations
+                    </NavLink>
+                </li>
+            </Authorized>
+            <NotAuthorized>
+                @*<li class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+            </NavLink>
+        </li>*@
+                <li>
+                    <br><br><br>
+                    <span class="text-primary">----------------------------------------------</span>
+                </li>
+                    <p class="text-white" align="center">Training</p>
+                <li>
+                    <span class="text-primary">----------------------------------------------</span>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="learnblazor">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Blazor
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <a class="nav-link" href="\learnnewrouting\Blazing\Records">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Routing
+                    </a>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="learnadvancedrouting?Parameter1=Blazing&Parameter2=Amazing&Parameter3=Records">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Advance Routing
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="ParentComponent">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Parent-Child
+                    </NavLink>
+                </li>
+            </NotAuthorized>
+        </AuthorizeView>
+        
+
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

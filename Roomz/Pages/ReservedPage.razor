@@ -1,0 +1,217 @@
+﻿@page "/reservation"
+@using Roomz.Data
+@using Roomz.Services
+@using BlazorInputFile
+@using System.IO
+
+@inherits OwningComponentBase<ScheduleService>
+
+
+@if (schedules == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="container border p-3">
+        <div class="row">
+            <div class="col-5">
+                <h3 class="text-info">Reserved Rooms</h3>
+            </div>
+        </div>
+        <div class="row pt-4">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Confirmed</th>
+                        <th>Room</th>
+                        <th>Reservation Date</th>
+                        <th>Reservation Start</th>
+                        <th>Reservation End</th>
+                        <th>Booked by</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var schedule in schedules)
+                    {
+                    <tr>
+                        <td><input type="checkbox" checked="@(schedule.IsConfirmed)" class="form-control" disabled /></td>
+                        <td>@schedule.Room.Name</td>
+                        <td>@schedule.AppointmentDateStart.ToShortDateString()</td>
+                        <td>@schedule.AppointmentDateStart.ToShortTimeString()</td>
+                        <td>@schedule.AppointmentDateEnd.ToShortTimeString()</td>
+                        <td>@schedule.Booker.LastName, @schedule.Booker.FirstName</td>
+                        <td>@schedule.Booker.Email</td>
+                        <td>
+                            <button class="btn btn-primary" style="width:150px" @onclick="(()=> EditSchedule(schedule))">
+                                Edit
+                            </button>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@if (ShowPopup)
+{
+    <div class="modal" tabindex="-1" style="display:block" role="dialog">
+        <EditForm Model="@objSchedule" OnValidSubmit="@ValidSubmit">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="text-info">Edit Reservation</h3>
+                        <button type="button" class="close" @onclick="ClosePopup">
+                            <span aria-hidden="true">X</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="row">
+                            <div class="col-9">
+                                <div class="row py-2">
+                                    <div class="col-4">
+                                        First Name
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-control" type="text" @bind="@objSchedule.Booker.FirstName" />
+                                    </div>
+                                </div>
+                                <div class="row py-2">
+                                    <div class="col-4">
+                                        Last Name
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-control" type="text" @bind="@objSchedule.Booker.LastName" />
+                                    </div>
+                                </div>
+                                <div class="row py-2">
+                                    <div class="col-4">
+                                        Customer Email
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-control" type="text" @bind="@objSchedule.Booker.Email" />
+                                    </div>
+                                </div>
+                                <div class="row py-2">
+                                    <div class="col-4">
+                                        Reservation Date
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-control" type="text" value="@objSchedule.AppointmentDateStart.ToShortDateString()" />
+                                    </div>
+                                </div>
+                                <div class="row py-2">
+                                    <div class="col-4">
+                                        Reservation Start
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-control" type="text" value="@objSchedule.AppointmentDateStart.ToShortTimeString()" />
+                                    </div>
+                                </div>
+                                <div class="row py-2">
+                                    <div class="col-4">
+                                        Reservation End
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-control" type="text" value="@objSchedule.AppointmentDateEnd.ToShortTimeString()" />
+                                    </div>
+                                </div>
+                                <div class="row py-2">
+                                    <div class="col-4">
+                                        Room
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-control" type="text" @bind="@objSchedule.Room.Name" />
+                                    </div>
+                                </div>
+                                <div class="row py-2">
+                                    <div class="col-4">
+                                        Reserved
+                                    </div>
+                                    <div class="col-8">
+                                        @*<input type="checkbox" class="form-control" checked="@objSchedule" @bind="objSchedule" />*@
+                                    </div>
+                                </div>
+                                <div class="row py-2">
+                                    <div class="offset-4 col">
+                                        <button class="btn btn-primary form-control" type="submit">Confirm</button>
+                                    </div>
+                                    <div class="col">
+                                        <button class="btn btn-danger form-control" @onclick="DeleteSchedule">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="col-3">
+                                <img src="@convertImageToDisplay(objSchedule.Room.Image)" width="100%" style="border-radius:5px; border:1px solid #bbb9b9;" />
+                            </div>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+}
+
+@code {
+    List<Schedule> schedules;
+
+    Schedule objSchedule = new Schedule();
+
+    public byte[] ImageUploaded { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Get current schedule
+        schedules = Service.GetSchedules();
+    }
+
+    bool ShowPopup = false;
+
+    void ClosePopup()
+    {
+        // Close popup
+        ShowPopup = false;
+    }
+
+    void EditSchedule(Schedule schedule)
+    {
+        objSchedule = schedule;
+        schedules = Service.GetSchedules();
+        ShowPopup = true;
+    }
+
+    void DeleteSchedule()
+    {
+        ShowPopup = false;
+        var result = @Service.DeleteSchedule(objSchedule);
+        schedules.Clear();
+        schedules = @Service.GetSchedules();
+    }
+
+    void ValidSubmit()
+    {
+        var result = false;
+        ShowPopup = false;
+        result = Service.ConfirmSchedule(objSchedule);
+        schedules = Service.GetSchedules();
+    }
+
+    string convertImageToDisplay(byte[] image)
+    {
+        if (image != null)
+        {
+            var base64 = Convert.ToBase64String(image);
+            var finalStr = string.Format("data:image/jpg;base64,{0}", base64);
+            return finalStr;
+        }
+        else return "";
+    }
+
+}

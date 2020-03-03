@@ -1,0 +1,49 @@
+﻿@page "/details/{RoomId:int}"
+@using Roomz.Data
+@using Roomz.Services
+
+@inherits OwningComponentBase<RoomService>
+
+    <br />
+    <h2 class="text-info">@(ShowSchedule ? "Reserve Room" : "Room Details")</h2>
+
+    @if(ShowSchedule)
+    {
+    <Roomz.Pages.Components.ScheduleComponent OnClickShowDetails="OnClickShowDetails" schedule="schedule"></Roomz.Pages.Components.ScheduleComponent>
+    }
+    else
+    {
+    <Roomz.Pages.Components.DetailsComponent OnClickShowSchedule="OnClickShowSchedule" schedule="schedule"></Roomz.Pages.Components.DetailsComponent>
+    }
+
+
+    @code {
+    [Parameter]
+    public int RoomId { get; set; }
+    public Schedule schedule { get; set; }
+
+    //This will be false on details page and true on appointments page.
+    bool ShowSchedule = false;
+
+    //Create new appointment
+    protected override void OnInitialized()
+    {
+        schedule = new Schedule()
+        {
+        AppointmentDateStart = DateTime.Now
+        };
+        schedule.Room = Service.GetRoom(RoomId);
+    }
+
+    void OnClickShowSchedule()
+    {
+    ShowSchedule = true;
+    }
+
+    void OnClickShowDetails()
+    {
+    ShowSchedule = false;
+    }
+
+
+    }

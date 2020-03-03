@@ -1,0 +1,91 @@
+﻿@using Roomz.Data
+
+@*//Show details of a chosen room to reserve/book.*@
+    <div class="p-4 border rounded row">
+        <div class="col-8">
+            <div class="form-group row">
+                <div class="col-4">
+                    Name
+                </div>
+                <div class="col-8">
+                    <input value="@schedule.Room.Id" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    Category Name
+                </div>
+                <div class="col-8">
+                    <input value="@schedule.Room.Name" class="form-control" readonly />
+                </div>
+            </div>
+            @*<div class="form-group row">
+                <div class="col-4">
+                    Condition
+                </div>
+                <div class="col-8">
+                    <input value="@schedule.Booker.FirstName" class="form-control" readonly />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    Price
+                </div>
+                <div class="col-8">
+                    <input value="@schedule.Booker.LastName." class="form-control" readonly />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    Reserved
+                </div>
+                <div class="col-8">
+                    <input value="@schedule.AppointmentDate" class="form-control" readonly />
+                </div>
+            </div>*@
+            <div class="form-group row">
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <a href="/" class="btn btn-success form-control">Back to List</a>
+                </div>
+                @if (!schedule.IsConfirmed)
+                {
+                    <div class="col-4">
+                        <button @onclick="OnClickShowSchedule" class="btn btn-primary form-control">
+                            Reserve This Room
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-4">
+                        Sorry, this item is already reserved.
+                    </div>
+                }
+            </div>
+        </div>
+        @*<div class="offset-1 col-3">
+            <img src="@convertImageToDisplay(schedule.Product.Image)" 
+                 width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+        </div>*@
+    </div>
+
+@code {
+    [Parameter]
+    public Schedule schedule { get; set; }
+
+    [Parameter]
+    public EventCallback OnClickShowSchedule { get; set; }
+
+    //string convertImageToDisplay(byte[] image)
+    //{
+    //    if (image != null)
+    //    {
+    //        var base64 = Convert.ToBase64String(image);
+    //        var finalStr = string.Format("data:image/jpg;base64,{0}", base64);
+    //        return finalStr;
+    //    }
+    //    return "";
+    //}
+
+}

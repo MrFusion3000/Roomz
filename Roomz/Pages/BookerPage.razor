@@ -1,0 +1,166 @@
+﻿@page "/users"
+@using Roomz.Data
+@using Roomz.Services
+
+@inherits OwningComponentBase<BookerService>
+@*@inject AuthenticationStateProvider AuthenticationStateProvider*@
+
+
+    <AuthorizeView>
+        <Authorized Context="Auth">
+
+            @if (bookers == null)
+            {
+                <p><em>Loading or No users exist</em></p>
+            }
+            else
+            {
+                <div class="container border p-3">
+                    <div class="row">
+                        <div class="col-5">
+                            <h3 class="text-info">User List</h3>
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-info form-control" @onclick="AddNewUser">
+                                Add New User
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row pt-4">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>User Name</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var obj in bookers)
+                                {
+                                    <tr>
+                                        <td>@obj.FirstName</td>
+                                        <td>
+                                            <button class="btn btn-primary" style="width:150px" @onclick="(()=> EditBooker(obj))">
+                                                Edit
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+        </Authorized>
+        <NotAuthorized> <p>You're not signed in!</p></NotAuthorized>
+    </AuthorizeView>
+
+
+@if (ShowPopup)
+{
+<div class="modal" tabindex="-1" style="display:block" role="dialog">
+    <EditForm Model="@objBooker" OnValidSubmit="@ValidSubmit">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-info">@(objBooker.Id !=0 ? "Update" : "Create") User</h3>
+                    <button type="button" class="close" @onclick="ClosePopup">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <DataAnnotationsValidator/>
+                    <ValidationSummary/>
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="row py-2">
+                                <div class="col-4">
+                                    User Name
+                                </div>
+                                <div class="col-8">
+                                    <input class="form-control" type="text" @bind="objBooker.FirstName" />
+                                </div>
+                            </div>
+                            <div class="row py-2">
+                                <div class="offset-4 col">
+                                    <button class="btn btn-primary form-control" type="submit">Submit</button>
+                                </div>
+                                @if (objBooker.Id > 0)
+                                {
+                                    <div class="col">
+                                        <button class="btn btn-danger form-control"
+                                                @onclick="DeleteBooker"
+                                                type="submit">Delete</button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+</div>
+}
+
+@code {
+
+    //[CascadingParameter]
+    //private Task<AuthenticationState> authenticationState { get; set; }
+
+    List<Booker> bookers;
+    Booker objBooker = new Booker();
+
+    bool ShowPopup = false;
+
+    protected override void OnInitialized()
+    {
+        //var user = (await authenticationState).User;
+        //var emaiOfUser = user.Identity.Name;
+        bookers = Service.GetBookers();
+    }
+
+    void AddNewUser()
+    {
+        objBooker = new Booker();
+        objBooker.Id = 0;
+        ShowPopup = true;
+    }
+
+    void EditBooker(Booker booker)
+    {
+        objBooker = booker;
+        ShowPopup = true;
+    }
+
+    void DeleteBooker()
+    {
+        ShowPopup = false;
+        var result = Service.DeleteBooker(objBooker);
+        bookers.Clear();
+        bookers = Service.GetBookers();
+    }
+
+    void ClosePopup()
+    {
+        ShowPopup = false;
+    }
+
+    void ValidSubmit()
+    {
+        var result = false;
+        ShowPopup = false;
+
+        if (objBooker.Id > 0)
+        {
+            result = Service.UpdateBooker(objBooker);
+        }
+        else
+        {
+            result = Service.CreateBooker(objBooker);
+        }
+
+        bookers = Service.GetBookers();
+    }
+}

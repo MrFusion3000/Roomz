@@ -1,0 +1,67 @@
+﻿@page "/index2"
+
+@using Roomz.Data
+@using Roomz.Services
+
+@inject ITableChangeBroadcastService ScheduleService
+@implements IDisposable
+
+<h1>Schedules</h1>
+
+<p>Immediate client notification on record table change with Blazor</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Room</th>
+            <th>Name</th>
+            <th>Start</th>
+            <th>End</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var schedule in schedules)
+        {
+            <tr>
+                <td>@schedule.RoomName</td>
+                <td>@schedule.AppointmentHeading</td>
+                <td>@schedule.AppointmentDateStart</td>
+                <td>@schedule.AppointmentDateEnd</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    IList<Schedule> schedules;
+
+    protected override void OnInitialized()
+    {
+        // Subscription to table record change
+        this.ScheduleService.OnScheduleChanged += this.ScheduleChanged;
+        this.schedules = this.ScheduleService.GetCurrentValues();
+    }
+
+    private async void ScheduleChanged(object sender, ScheduleChangeEventArgs args)
+    {
+        var recordToupdate = this.schedules.FirstOrDefault(x => x.AppointmentDateStart == args.NewValue.AppointmentDateStart);
+        if (recordToupdate == null)
+        {
+            this.schedules.Add(args.NewValue);
+        }
+        else
+        {
+            recordToupdate.AppointmentHeading = args.NewValue.AppointmentHeading;
+        }
+
+        await InvokeAsync(() =>
+        {
+            base.StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        this.ScheduleService.OnScheduleChanged += this.ScheduleChanged;
+    }
+}

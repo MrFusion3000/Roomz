@@ -1,0 +1,66 @@
+﻿@using Roomz.Data
+@using Roomz.Services
+
+@inject NavigationManager NavigationManager
+@inherits OwningComponentBase<ScheduleService>
+
+    <div class="p-4 border row">
+        <EditForm class="col-8" Model="@schedule" OnValidSubmit="@ValidSubmit">
+            <div class="form-group row">
+                <div class="col-8 offset-4">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <input type="datetime" @PresentDateTime @bind="@schedule.AppointmentDateStart" class="form-control" >
+                </div>
+                <div class="col-8">
+                    <button class="btn btn-primary form-control">
+                        Reserve Now!
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+        @*<div class="offset-1 col-3">
+            @if (schedule.Room != null)
+            {
+            <img src="@convertImageToDisplay(schedule.Room.Image)" 
+                 width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+            }
+        </div>*@
+    </div>
+
+@code {
+    [Parameter]
+    public Schedule schedule { get; set; }
+
+    DateTime PresentDateTime = DateTime.Now;
+
+    [Parameter]
+    public EventCallback OnClickShowDetails { get; set; }
+
+
+
+    string convertImageToDisplay(byte[] image)
+    {
+        if (image != null)
+        {
+            var base64 = Convert.ToBase64String(image);
+            var finalStr = string.Format("data:image/jpg;base64,{0}", base64);
+            return finalStr;
+        }
+        return "";
+    }
+
+    private void ValidSubmit()
+    {
+        var result = Service.CreateSchedule(schedule);
+        if (result)
+        {
+            NavigationManager.NavigateTo("schedulebook");
+        }
+
+    }
+}

@@ -1,0 +1,29 @@
+﻿@page "/"
+@using Roomz.Services;
+@using Roomz.Data;
+
+@inherits OwningComponentBase<RoomService>
+
+<h2>List of available meeting rooms</h2>
+<p></p>
+<p></p>
+
+<div class="row">
+
+    @foreach (var room in listRoom)
+    {
+        <Roomz.Pages.Components.IndividualRoom room="room"></Roomz.Pages.Components.IndividualRoom>
+    }
+</div>
+
+<div class="copyright">&copy; Copyright @DateTime.Now.Year, Powered by @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription</div>
+
+@code{
+    List<Room> listRoom = new List<Room>();
+
+    protected override void OnInitialized()
+    {
+        listRoom = Service.GetRooms();
+    }
+
+}

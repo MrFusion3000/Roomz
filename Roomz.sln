@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Roomz", "Roomz\Roomz.csproj", "{EFC5CFF8-3288-42DD-A0F1-CB89296F08EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EFC5CFF8-3288-42DD-A0F1-CB89296F08EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFC5CFF8-3288-42DD-A0F1-CB89296F08EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFC5CFF8-3288-42DD-A0F1-CB89296F08EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFC5CFF8-3288-42DD-A0F1-CB89296F08EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {987CCC98-0928-418E-8280-F3511ECB5609}
+	EndGlobalSection
+EndGlobal

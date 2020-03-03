@@ -1,0 +1,21 @@
+﻿
+@page "/learnnewrouting/{parameter1}/{parameter2}"
+@page "/learnnewrouting/{parameter1}"
+@page "/learnnewrouting"
+@page "/learnrouting"
+
+
+<h2>Routing</h2>
+<h3>Navigating to component with or without parameters</h3>
+
+<p>Parameter 1: @Parameter1</p>
+<p>Parameter 2: @Parameter2</p>
+
+@code {
+
+    [Parameter]
+    public string Parameter1 { get; set; }
+    [Parameter]
+    public string Parameter2 { get; set; }
+
+}

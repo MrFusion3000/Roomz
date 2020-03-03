@@ -1,0 +1,126 @@
+﻿@using Roomz.Data;
+@using Roomz.Services;
+@using System.Threading;
+
+
+@inject NavigationManager NavigationManager
+@inherits OwningComponentBase<ScheduleService>
+
+
+    @*<div><br /><br /> @RoomId<br /></div>*@
+    <div style="padding: 50px;" class="row">
+
+        @*// Could probably work with a Switch-Case statement*@
+        @if (nextSchedule != null)
+        {
+            @if (nextSchedule.AppointmentDateStart > CheckTimeSlot.AddMinutes(15))
+            {
+                <div class="col"><button class="btn btn-primary form-control" @onclick=@(() => TimeSlot(15, TRoomId))>15 min</button></div>
+                @if (nextSchedule.AppointmentDateStart >= CheckTimeSlot.AddMinutes(30))
+                {
+                    <div class="col"><button class="btn btn-primary form-control" @onclick=@(() => TimeSlot(30, TRoomId))>30 min</button></div>
+                    @if (nextSchedule.AppointmentDateStart >= CheckTimeSlot.AddMinutes(45))
+                    {
+                        <div class="col"><button class="btn btn-primary form-control" @onclick=@(() => TimeSlot(45, TRoomId))>45 min</button></div>
+                        @if (nextSchedule.AppointmentDateStart >= CheckTimeSlot.AddMinutes(60))
+                        {
+                            <div class="col"><button class="btn btn-primary form-control" @onclick=@(() => TimeSlot(60, TRoomId))>60 min</button></div>
+                            @if (nextSchedule.AppointmentDateStart >= CheckTimeSlot.AddMinutes(90))
+                            {
+                                <div class="col"><button class="btn btn-primary form-control" @onclick=@(() => TimeSlot(90, TRoomId))>90 min</button></div>
+                                @if (nextSchedule.AppointmentDateStart >= CheckTimeSlot.AddMinutes(120))
+                                {
+                                    <div class="col"><button class="btn btn-primary form-control" @onclick=@(() => TimeSlot(90, TRoomId))>120 min</button></div>
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    @*<div class="col"><button class="btn btn-primary form-control" @onclick=@(() => TimeSlot(15))>15 min</button></div>
+                    <div class="col"><button class="btn btn-primary form-control" @onclick=@(() => TimeSlot(30))>30 min</button></div>
+                    <div class="col"><button class="btn btn-primary form-control" @onclick=@(() => TimeSlot(60))>60 min</button></div>*@
+                }
+            }
+        }
+        else
+        {
+            if (nextSchedule == null)
+            {
+                <div class="col"><button class="btn btn-primary form-control" @onclick=@(() => TimeSlot(15, TRoomId))>15 min</button></div>
+                <div class="col"><button class="btn btn-secondary form-control" @onclick=@(() => TimeSlot(30, TRoomId))>30 min</button></div>
+                <div class="col"><button class="btn btn-success form-control" @onclick=@(() => TimeSlot(60, TRoomId))>60 min</button></div>
+                <div class="col"><button class="btn btn-danger form-control" @onclick=@(() => TimeSlot(90, TRoomId))>90 min</button></div>
+                <div class="col"><button class="btn btn-dark form-control" @onclick=@(() => TimeSlot(120, TRoomId))>120 min</button></div>
+                <div class="col"><button class="btn btn-warning form-control" @onclick=@(() => TimeSlot(180, TRoomId))>180 min</button></div>
+            }
+        }
+
+    </div>
+
+
+@code {
+
+    [Parameter] public Schedule nextSchedule { get; set; }
+    [Parameter] public Schedule newSchedule { get; set; }
+    [Parameter] public int TRoomId { get; set; }
+
+
+
+    DateTime CheckTimeSlot = DateTime.Now;
+    DateTime EndOfDay = DateTime.Now.AddHours(64);
+
+    public void TimeSlot(int NextTimeSlot, int _roomId)
+    {
+        var roomId = _roomId;
+
+        // Round up to nearest 15 minutes
+        DateTime RoundUp(DateTime dt, TimeSpan d)
+        {
+            return new DateTime((dt.Ticks + d.Ticks - 1) / d.Ticks * d.Ticks, dt.Kind);
+        }
+
+        newSchedule = new Schedule();
+        {
+            var SlotAdd = RoundUp(DateTime.Now, TimeSpan.FromMinutes(NextTimeSlot));
+
+            newSchedule.RoomId = roomId;
+            newSchedule.AppointmentHeading = "Snabb";
+            newSchedule.AppointmentDateStart = DateTime.Now;
+            newSchedule.AppointmentDateEnd = SlotAdd;
+            newSchedule.BookerId = 1007;
+            newSchedule.IsConfirmed = true;
+
+            StartCountdown();
+
+        }
+
+        var result = Service.CreateSchedule(newSchedule);
+        if (result)
+        {
+            this.ShouldRender();
+
+            //NavigationManager.NavigateTo("/roomzfront/1");
+        }
+    }
+
+}
+
+@functions {
+    private int Count { get; set; } = 2;
+
+    void StartCountdown()
+    {
+        var timer = new Timer(new TimerCallback(_ =>
+        {
+            if (Count <= 0) return;
+            Count--;
+
+            // Note that the following line is necessary because otherwise
+            // Blazor would not recognize the state change and not refresh the UI
+            InvokeAsync(this.StateHasChanged);
+        }), null, 1000, 1000);
+    }
+
+}

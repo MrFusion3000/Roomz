@@ -1,0 +1,27 @@
+﻿@page "/learnadvancedrouting"
+@inject NavigationManager NavigationManager
+
+<h2>Advanced Routing</h2>
+<h3>Populate components by routing parameters</h3>
+
+<p>Parameter 1: @Parameter1</p>
+<p>Parameter 2: @Parameter2</p>
+<p>Parameter 3: @Parameter3</p>
+<p><button @onclick="LoadParameters">Load Parameters</button></p>
+
+
+@code {
+    string Parameter1;
+    string Parameter2;
+    string Parameter3;
+
+        private void LoadParameters()
+    {
+        var absoluteUri = new Uri(NavigationManager.Uri);
+        var queryParam = System.Web.HttpUtility.ParseQueryString(absoluteUri.Query);
+
+        Parameter1 = queryParam["Parameter1"];
+        Parameter2 = queryParam["Parameter2"];
+        Parameter3 = queryParam["Parameter3"];
+    }
+}
