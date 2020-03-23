@@ -1,0 +1,15 @@
+﻿@*Header with Room Name (Left) and Present Time (RIGHT)*@
+@*@if (!room.Id.Equals(RoomId))
+    {*@
+<div class="d-flex justify-content-between">
+    <div class="p-2"><h3 class="text-info">@thisRoomId | @thisRoomName</h3></div>
+    <div class="p-2"><h3 class="text-info">@DateTime.Now</h3></div>
+</div>
+@*}*@
+
+
+@code {
+    [Parameter] public int thisRoomId { get; set; }
+    [Parameter] public string thisRoomName { get; set; }
+
+}

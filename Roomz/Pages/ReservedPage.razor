@@ -16,14 +16,14 @@ else
     <div class="container border p-3">
         <div class="row">
             <div class="col-5">
-                <h3 class="text-info">Reserved Rooms</h3>
+                <h3 class="text-info">Schedules</h3>
             </div>
         </div>
         <div class="row pt-4">
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Confirmed</th>
+                        @*<th>Confirmed</th>*@
                         <th>Room</th>
                         <th>Reservation Date</th>
                         <th>Reservation Start</th>
@@ -36,7 +36,6 @@ else
                     @foreach (var schedule in schedules)
                     {
                     <tr>
-                        <td><input type="checkbox" checked="@(schedule.IsConfirmed)" class="form-control" disabled /></td>
                         <td>@schedule.Room.Name</td>
                         <td>@schedule.AppointmentDateStart.ToShortDateString()</td>
                         <td>@schedule.AppointmentDateStart.ToShortTimeString()</td>
@@ -74,59 +73,46 @@ else
                         <div class="row">
                             <div class="col-9">
                                 <div class="row py-2">
-                                    <div class="col-4">
-                                        First Name
-                                    </div>
-                                    <div class="col-8">
-                                        <input class="form-control" type="text" @bind="@objSchedule.Booker.FirstName" />
+                                    <div class="col-4">First Name</div>
+                                    <div class="col-8"><input class="form-control" type="text" @bind="@objSchedule.Booker.FirstName" readonly /></div>
+                                </div>
+                                <div class="row py-2">
+                                    <div class="col-4">Last Name</div>
+                                    <div class="col-8"><input class="form-control" type="text" @bind="@objSchedule.Booker.LastName" readonly />
                                     </div>
                                 </div>
                                 <div class="row py-2">
-                                    <div class="col-4">
-                                        Last Name
-                                    </div>
-                                    <div class="col-8">
-                                        <input class="form-control" type="text" @bind="@objSchedule.Booker.LastName" />
+                                    <div class="col-4">Customer Email</div>
+                                    <div class="col-8"><input class="form-control" type="text" @bind="@objSchedule.Booker.Email" readonly />
                                     </div>
                                 </div>
                                 <div class="row py-2">
-                                    <div class="col-4">
-                                        Customer Email
-                                    </div>
-                                    <div class="col-8">
-                                        <input class="form-control" type="text" @bind="@objSchedule.Booker.Email" />
+                                    <div class="col-4">Reservation Date</div>
+                                    <div class="col-8"><input class="form-control" type="text" value="@objSchedule.AppointmentDateStart.ToShortDateString()" />
                                     </div>
                                 </div>
                                 <div class="row py-2">
-                                    <div class="col-4">
-                                        Reservation Date
-                                    </div>
-                                    <div class="col-8">
-                                        <input class="form-control" type="text" value="@objSchedule.AppointmentDateStart.ToShortDateString()" />
+                                    <div class="col-4">Reservation Start</div>
+                                    <div class="col-8"><input class="form-control" type="text" value="@objSchedule.AppointmentDateStart.ToShortTimeString()" />
                                     </div>
                                 </div>
                                 <div class="row py-2">
-                                    <div class="col-4">
-                                        Reservation Start
-                                    </div>
-                                    <div class="col-8">
-                                        <input class="form-control" type="text" value="@objSchedule.AppointmentDateStart.ToShortTimeString()" />
+                                    <div class="col-4">Reservation End</div>
+                                    <div class="col-8"><input class="form-control" type="text" value="@objSchedule.AppointmentDateEnd.ToShortTimeString()" />
                                     </div>
                                 </div>
                                 <div class="row py-2">
-                                    <div class="col-4">
-                                        Reservation End
-                                    </div>
+                                    <div class="col-4">Room</div>
                                     <div class="col-8">
-                                        <input class="form-control" type="text" value="@objSchedule.AppointmentDateEnd.ToShortTimeString()" />
-                                    </div>
-                                </div>
-                                <div class="row py-2">
-                                    <div class="col-4">
-                                        Room
-                                    </div>
-                                    <div class="col-8">
-                                        <input class="form-control" type="text" @bind="@objSchedule.Room.Name" />
+                                        @*<input class="form-control" type="text" @bind="@objSchedule.Room.Name" />*@
+                                        <select @onchange="RoomSelectionChanged" class="form-control">
+                                            @foreach (var roomInd in rooms)
+                                            {
+                                                <option value="@roomInd.Id" selected="@(roomInd.Id==objRoom.Id? true: false)">
+                                                    @roomInd.Name
+                                                </option>
+                                            }
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="row py-2">
@@ -161,29 +147,26 @@ else
 
 @code {
     List<Schedule> schedules;
+    List<Room> rooms;
+    Room objRoom = new Room();
 
     Schedule objSchedule = new Schedule();
 
-    public byte[] ImageUploaded { get; set; }
+    bool ShowPopup = false;
 
     protected override void OnInitialized()
     {
         // Get current schedule
         schedules = Service.GetSchedules();
-    }
+        rooms = Service.GetRooms();
 
-    bool ShowPopup = false;
-
-    void ClosePopup()
-    {
-        // Close popup
-        ShowPopup = false;
     }
 
     void EditSchedule(Schedule schedule)
     {
         objSchedule = schedule;
-        schedules = Service.GetSchedules();
+        //schedules = Service.GetSchedules();
+        rooms = Service.GetRooms();
         ShowPopup = true;
     }
 
@@ -195,23 +178,35 @@ else
         schedules = @Service.GetSchedules();
     }
 
+    void ClosePopup()
+    {
+        // Close popup
+        ShowPopup = false;
+    }
+
     void ValidSubmit()
     {
         var result = false;
         ShowPopup = false;
-        result = Service.ConfirmSchedule(objSchedule);
-        schedules = Service.GetSchedules();
+        //result = Service.ConfirmSchedule(objSchedule);
+        //schedules = Service.GetSchedules();
+
+        if (objSchedule.Id > 0)
+        {
+            result = Service.UpdateSchedule(objSchedule);
+        }
+        else
+        {
+            result = Service.CreateSchedule(objSchedule);
+        }
     }
 
-    string convertImageToDisplay(byte[] image)
+    void RoomSelectionChanged(ChangeEventArgs e)
     {
-        if (image != null)
+        if (int.TryParse(e.Value.ToString(), out int id))
         {
-            var base64 = Convert.ToBase64String(image);
-            var finalStr = string.Format("data:image/jpg;base64,{0}", base64);
-            return finalStr;
+            objSchedule.RoomId = id;
         }
-        else return "";
     }
 
 }

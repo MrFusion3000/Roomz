@@ -4,9 +4,11 @@
 
 @inherits OwningComponentBase<RoomService>
 
-<h2>List of available meeting rooms</h2>
-<p></p>
-<p></p>
+<div><h2>List of available meeting rooms in the building</h2></div>
+<div><p>Click on the button for the room where the pad is placed <br/>
+    To admin users or room info use the Log in link in the upper right corner. 
+    </p></div>
+
 
 <div class="row">
 
@@ -18,12 +20,129 @@
 
 <div class="copyright">&copy; Copyright @DateTime.Now.Year, Powered by @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription</div>
 
+@if (ShowPopup)
+{
+    <div class="modal" tabindex="-1" style="display:block" role="dialog">
+        <EditForm Model="@objRoom" OnValidSubmit="@ValidSubmit">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="text-info">@(objRoom.Id != 0 ? "Update" : "Create") Room</h3>
+                        <button type="button" class="close" @onclick="ClosePopup">
+                            <span aria-hidden="true">X</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="row">
+                            <div class="col-9">
+                                <div class="row py-2">
+                                    <div class="col-4">
+                                        Room Id
+                                    </div>
+                                    <div class="col-8">
+                                        <InputNumber class="form-control" @bind-Value="objRoom.Id" />
+                                        <ValidationMessage For="@(()=> objRoom.Id)"></ValidationMessage>
+                                    </div>
+                                </div>
+                                <div class="row py-2">
+                                    <div class="col-4">
+                                        Room Name
+                                    </div>
+                                    <div class="col-8">
+                                        <InputText class="form-control" @bind-Value="objRoom.Name" />
+                                        <ValidationMessage For="@(()=> objRoom.Name)"></ValidationMessage>
+                                    </div>
+                                </div>
+                                <div class="row py-2">
+                                    <div class="offset-4 col">
+                                        <button class="btn btn-primary form-control" type="submit">Submit</button>
+                                    </div>
+                                    @if (objRoom.Id > 0)
+                                    {
+                                        <div class="col">
+                                            <button class="btn btn-danger form-control"
+                                                    @onclick="DeleteRoom"
+                                                    type="submit">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+}
+
+
+
 @code{
     List<Room> listRoom = new List<Room>();
+
+    List<Room> rooms;
+
+    Room objRoom = new Room();
+
+    bool ShowPopup = false;
 
     protected override void OnInitialized()
     {
         listRoom = Service.GetRooms();
+    }
+
+    void AddNewRoom()
+    {
+        objRoom = new Room();
+        objRoom.Id = 0;
+        ShowPopup = true;
+    }
+
+    void EditRoom(Room room)
+    {
+        objRoom = room;
+        ShowPopup = true;
+    }
+
+    void DeleteRoom()
+    {
+        ShowPopup = false;
+        Service.DeleteRoom(objRoom);
+        rooms.Clear();
+        rooms = Service.GetRooms();
+    }
+
+    void ClosePopup()
+    {
+        ShowPopup = false;
+    }
+
+    void ValidSubmit()
+    {
+        var result = false;
+        ShowPopup = false;
+        //if (ImageUploaded != null)
+        //{
+        //    objRoom.Image = ImageUploaded;
+        //    ImageUploaded = null;
+        //}
+
+        if (objRoom.Id > 0)
+        {
+            result = Service.UpdateRoom(objRoom);
+        }
+        else
+        {
+            result = Service.CreateRoom(objRoom);
+        }
+
+        rooms = Service.GetRooms();
     }
 
 }

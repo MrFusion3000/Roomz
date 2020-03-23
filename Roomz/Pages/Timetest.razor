@@ -1,0 +1,39 @@
+﻿@page "/timetest"
+@using Roomz.Services;
+@using Roomz.Data;
+@using System;
+@using System.Timers;
+
+<div>@test.ToString()</div>
+
+@code
+{
+    public DateTime test = DateTime.Now;
+
+    public class Example
+    {
+        private static Timer aTimer;
+
+        public static void Bail()
+        {
+            // Create a timer and set a two second interval.
+            aTimer = new System.Timers.Timer();
+            aTimer.Interval = 1000;
+
+            // Hook up the Elapsed event for the timer.
+            aTimer.Elapsed += OnTimedEvent;
+
+            // Have the timer fire repeated events (true is the default)
+            aTimer.AutoReset = true;
+
+            // Start the timer
+            aTimer.Enabled = true;
+        }
+
+        public static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            DateTime test1 = e.SignalTime;
+        }
+    }
+
+}

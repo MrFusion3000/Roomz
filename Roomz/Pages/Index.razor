@@ -1,0 +1,179 @@
+﻿@page "/{RoomId:int}"
+
+@using Roomz.Services;
+@using Roomz.Data;
+
+@inject ITableChangeBroadcastService ScheduleService
+@implements IDisposable
+@inherits OwningComponentBase<ScheduleService>
+@*List of todays upcoming reservations for chosen room*@
+<div class="d-flex justify-content-between">
+    <div class="btn-group">
+        @* Sends user to room details based on room.Id, updates Room Id + Room Name*@
+        <NavLink href="@($"/0")" @onclick="@( e => UpdateRoom(0, "Alla"))" class="btn btn-dark pull-right btn-outline-info text-blue">Alla</NavLink>
+    </div>
+    @foreach (var roomInd in roomsList)
+    {
+        <div class="btn-group">
+            @* Sends user to room details based on room.Id, updates Room Id + Room Name*@
+            <NavLink href="@($"/{roomInd.Id}")" @onclick="@( e => UpdateRoom(roomInd.Id, roomInd.Name))" class="btn btn-dark pull-right btn-outline-info text-blue">@roomInd.Name</NavLink>
+        </div>
+    }
+</div>
+<br />
+<br />
+
+<div class="col"><button class="btn btn-primary form-control" @onclick=@(() => DeleteSchedules("2020-02-05"))>DELETE</button></div>
+
+
+@*Header with Room Id | Name (Left) and Present Time (RIGHT)*@
+<div class="d-flex justify-content-between">
+    <div class="p-2"><h3 class="text-info">@thisRoomId | @thisRoomName</h3></div>
+    <div class="p-2"><h3 class="text-info">@DateTime.Now</h3></div>
+</div>
+
+@*List of todays upcoming reservations for chosen room*@
+<table class="table table-striped table-dark">
+    <thead class="thead-dark">
+        <tr>
+            @if (RoomId != 0)
+            {
+                <th scope="col"> </th>
+                <th scope="col">Datum</th>
+
+            }
+            else
+            {
+                <th scope="col">Rum</th>
+                <th scope="col">Datum</th>
+
+            }
+            <th scope="col"><br />Start</th>
+            <th scope="col"><br />Slut</th>
+            <th scope="col"><br />Bokare</th>
+            <th scope="col"><br />Rubrik</th>
+            <th scope="col"><br />Edit</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var schedule in schedules)
+        {
+            if (RoomId == 0)
+            {
+                <tr>
+                    <td scope="col">@schedule.RoomName</td>
+                    <td scope="col">@schedule.AppointmentDateStart.ToShortDateString()</td>
+
+                    <td scope="col">@schedule.AppointmentDateStart.ToShortTimeString()</td>
+                    <td scope="col">@schedule.AppointmentDateEnd.ToShortTimeString()</td>
+                    <td scope="col">@schedule.BookerEmail</td>
+                    <td scope="col">@schedule.AppointmentHeading</td>
+                    <td></td>
+                </tr>
+            }
+            else
+            {
+                if (schedule.RoomId == RoomId)
+                {
+                    <tr>
+                        <td scope="col"> </td>
+                        <td scope="col">@schedule.AppointmentDateStart.ToShortDateString()</td>
+                        <td scope="col">@schedule.AppointmentDateStart.ToShortTimeString()</td>
+                        <td scope="col">@schedule.AppointmentDateEnd.ToShortTimeString()</td>
+                        <td scope="col">@schedule.BookerEmail</td>
+                        <td scope="col">@schedule.AppointmentHeading</td>
+                        <td></td>
+                    </tr>
+                }
+            }
+
+        }
+    </tbody>
+</table>
+
+<div class="copyright">&copy; Copyright @DateTime.Now.Year, Powered by @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription</div>
+
+@code{
+    IList<Schedule> schedules;
+    List<Room> roomsList;
+    Room room = new Room();
+
+    [Parameter] public int thisRoomId { get; set; } = 0;
+    [Parameter] public string thisRoomName { get; set; }
+
+    [Parameter] public int RoomId { get; set; }
+
+    DateTime AppStart = DateTime.Now;
+
+    private void UpdateRoom(int _roomId, string _roomName)
+    {
+        thisRoomId = _roomId;
+        thisRoomName = _roomName;
+
+    }
+
+    void DeleteSchedule()
+    {
+        ShowPopup = false;
+        var result = @Service.DeleteSchedule(objSchedule);
+        schedules.Clear();
+        schedules = @Service.GetSchedules();
+    }
+
+    private void DeleteSchedules(string dtEnd)
+    {
+        DateTime _dtEnd;
+        if (DateTime.TryParse(dtEnd, out _dtEnd))
+        {
+            var result = Service.DeleteSchedulesFromDate(_dtEnd);
+
+            if (result)
+            {
+                this.ShouldRender();
+            }
+        }
+
+
+    }
+
+
+    //EventCallback
+    protected override void OnInitialized()
+    {
+        //Get room name from RoomId
+        room = Service.GetRoom(RoomId);
+        roomsList = Service.GetRooms();
+
+        thisRoomId = room.Id;
+        thisRoomName = room.Name;
+
+        // Subscription to table record change
+        this.ScheduleService.OnScheduleChanged += this.ScheduleChanged;
+        this.schedules = this.ScheduleService.GetCurrentValues();
+
+    }
+
+    private async void ScheduleChanged(object sender, ScheduleChangeEventArgs args)
+    {
+        var recordToupdate = this.schedules.FirstOrDefault(x => x.AppointmentDateStart == args.NewValue.AppointmentDateStart);
+        if (recordToupdate == null)
+        {
+            this.schedules.Add(args.NewValue);
+        }
+        else
+        {
+            recordToupdate.AppointmentHeading = args.NewValue.AppointmentHeading;
+        }
+
+        await InvokeAsync(() =>
+        {
+            base.StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        this.ScheduleService.OnScheduleChanged += this.ScheduleChanged;
+    }
+
+}

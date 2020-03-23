@@ -14,6 +14,19 @@ a, .btn-link {
     border-color: #1861ac;
 }
 
+.sqbtn {
+    background-color: #1bb9ff; /* Green */
+    border: none;
+    color: white;
+    padding: 50px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
 app {
     position: relative;
     display: flex;

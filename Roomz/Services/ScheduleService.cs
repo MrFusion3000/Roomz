@@ -26,8 +26,7 @@ namespace Roomz.Services
 
         // Get Reservation items list from database based on RoomID
         public List<Schedule> GetSchedulesFromRoom(int roomId)
-        {
-            
+        {            
             return _db.Schedules.Include(u => u.Room).Include(x => x.Booker).OrderBy(c => c.AppointmentDateStart).Where(b => b.RoomId == roomId).ToList();
         }
 
@@ -78,25 +77,21 @@ namespace Roomz.Services
             return true;
         }
 
-        //// Update Schedule
-        //public bool UpdateSchedule(Schedule objSchedule)
-        //{
-        //    var ExistingSchedule = _db.Schedules.FirstOrDefault(x => x.Id == objSchedule.Id);
-        //    if (ExistingSchedule != null)
-        //    {
-        //        //if (objProduct.Image == null)
-        //        //{
-        //        //    objSchedule.Image = ExistingSchedule.Image;
-        //        //}
-        //        _db.Schedules.Update(objSchedule);
-        //        _db.SaveChanges();
-        //    }
-        //    else
-        //    {
-        //        return false;
-        //    }
-        //    return true;
-        //}
+        // Update Schedule
+        public bool UpdateSchedule(Schedule objSchedule)
+        {
+            var ExistingSchedule = _db.Schedules.FirstOrDefault(x => x.Id == objSchedule.Id);
+            if (ExistingSchedule != null)
+            {                
+                _db.Schedules.Update(objSchedule);
+                _db.SaveChanges();
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }
 
         public bool DeleteSchedule(Schedule objSchedule)
         {
@@ -114,11 +109,34 @@ namespace Roomz.Services
 
         }
 
+        public bool DeleteSchedulesFromDate(DateTime objDateTime)
+        {
+            var result = _db.Schedules.FirstOrDefault(x => x.AppointmentDateEnd <= objDateTime);
+            
+            if (result != null)
+            {
+                _db.Schedules.Remove(result);
+                _db.SaveChanges();
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+
+        }
+
         // Get Room item from database based on RoomId
         public Room GetRoom(int roomId)
         {
             Room obj = new Room();
             return _db.Rooms.FirstOrDefault(u => u.Id == roomId);
+        }
+
+        // Get Rooms list from database
+        public List<Room> GetRooms()
+        {
+            return _db.Rooms.ToList();
         }
 
     }

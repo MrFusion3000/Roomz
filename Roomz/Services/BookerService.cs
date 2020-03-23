@@ -1,4 +1,5 @@
-﻿using Roomz.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Roomz.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +18,18 @@ namespace Roomz.Services
         public Booker GetBooker(int bookerId)
         {
             Booker obj = new Booker();
-            return _db.Bookers.FirstOrDefault(u => u.Id == bookerId);
+            return _db.Bookers.Include(u => u.BookerRole).FirstOrDefault(u => u.Id == bookerId);
         }
 
         public List<Booker> GetBookers()
         {
-            return _db.Bookers.ToList();
+            return _db.Bookers.Include(u => u.BookerRole).ToList();
+        }
+
+        // Get BookerRole items list from database
+        public List<BookerRole> GetBookerRoleList()
+        {
+            return _db.BookerRoles.ToList();
         }
 
         public bool CreateBooker(Booker objBooker)

@@ -48,11 +48,7 @@ namespace Roomz.Services
         {
             var ExistingRoom = _db.Rooms.FirstOrDefault(u => u.Id == objRoom.Id);
             if (ExistingRoom != null)
-            {
-                //if (objRoom.Image == null)
-                //{
-                //    objRoom.Image = ExistingRoom.Image;
-                //}
+            {                
                 _db.Rooms.Update(objRoom);
                 _db.SaveChanges();
             }

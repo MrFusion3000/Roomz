@@ -14,20 +14,22 @@
     <thead>
         <tr>
             <th>Room</th>
-            <th>Name</th>
+            <th>Title</th>
             <th>Start</th>
             <th>End</th>
+            <th>Booker</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var schedule in schedules)
         {
-            <tr>
-                <td>@schedule.RoomName</td>
-                <td>@schedule.AppointmentHeading</td>
-                <td>@schedule.AppointmentDateStart</td>
-                <td>@schedule.AppointmentDateEnd</td>
-            </tr>
+        <tr>
+            <td>@schedule.RoomName</td>
+            <td>@schedule.AppointmentHeading</td>
+            <td>@schedule.AppointmentDateStart</td>
+            <td>@schedule.AppointmentDateEnd</td>
+            <td>@schedule.BookerEmail</td>
+        </tr>
         }
     </tbody>
 </table>

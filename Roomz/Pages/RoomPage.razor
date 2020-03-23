@@ -31,12 +31,7 @@
                         <thead>
                             <tr>
                                 <th>Id</th>
-                                <th>Room Name</th>
-                                @*<th>Price</th>
-                                <th>Condition</th>
-                                <th>Category</th>
-                                <th style="text-align:center">Reserved</th>
-                                <th></th>*@
+                                <th>Room Name</th>                                
                             </tr>
                         </thead>
                         <tbody>
@@ -44,11 +39,7 @@
                             {
                             <tr>
                                 <td>@obj.Id</td>
-                                <td>@obj.Name</td>
-                                <td>@*@obj.Price*@</td>
-                                <td>@*@obj.ShadeColor*@</td>
-                                <td>@*@obj.User.Name*@</td>
-                                @*<td style="text-align:center"><input type="checkbox" checked="@obj.schedule.Reservation" disabled/></td>*@
+                                <td>@obj.Name</td>                                
                                 <td>
                                     <button class="btn btn-primary" style="width:150px" @onclick="(()=> EditRoom(obj))">
                                         Edit

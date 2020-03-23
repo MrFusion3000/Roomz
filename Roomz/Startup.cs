@@ -76,6 +76,7 @@ namespace Roomz
             services.AddScoped<BookerService>();
             services.AddRouting();
             services.AddSingleton<ITableChangeBroadcastService, TableChangeBroadcastService>();
+            //services.AddSingleton<NotifierService>();
             //services.AddHealthChecks();
         }
 
