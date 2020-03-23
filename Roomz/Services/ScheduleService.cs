@@ -106,16 +106,14 @@ namespace Roomz.Services
                 return false;
             }
             return true;
-
         }
 
         public bool DeleteSchedulesFromDate(DateTime objDateTime)
         {
-            var result = _db.Schedules.FirstOrDefault(x => x.AppointmentDateEnd <= objDateTime);
-            
+            var result = _db.Schedules.Where(x => x.AppointmentDateEnd <= objDateTime).ToList();            
             if (result != null)
             {
-                _db.Schedules.Remove(result);
+                _db.Schedules.RemoveRange(result);
                 _db.SaveChanges();
             }
             else
@@ -123,7 +121,6 @@ namespace Roomz.Services
                 return false;
             }
             return true;
-
         }
 
         // Get Room item from database based on RoomId
