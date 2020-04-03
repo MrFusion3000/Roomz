@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 
 namespace Roomz.Services
@@ -108,9 +109,17 @@ namespace Roomz.Services
             return true;
         }
 
-        public bool DeleteSchedulesFromDate(DateTime objDateTime)
+        // Delete all schedules based on passed value of objDateTime
+        public bool DeleteSchedulesFromDate(string changedDate)
         {
-            var result = _db.Schedules.Where(x => x.AppointmentDateEnd <= objDateTime).ToList();            
+            DateTime changedDateStart = Convert.ToDateTime(changedDate);
+            DateTime changedDateEnd = Convert.ToDateTime(changedDate).AddDays(1);
+            //var result = _db.Schedules.Where(x => x.AppointmentDateStart.ToShortDateString() == changedDate).ToList();
+            var result = _db.Schedules.Where(x => x.AppointmentDateStart >= changedDateStart && x.AppointmentDateStart < changedDateEnd);
+                //.GroupBy(x => x.AppointmentDateStart)
+                //.Select(y => y.OrderByDescending(g => g.AppointmentDateStart )
+                //.FirstOrDefault(p => p.AppointmentDateStart >= changedDateStart && p.AppointmentDateStart < changedDateEnd);
+
             if (result != null)
             {
                 _db.Schedules.RemoveRange(result);

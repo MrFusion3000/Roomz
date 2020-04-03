@@ -15,40 +15,45 @@
         }
         else
         {
-            <div class="container border p-3">
-                <div class="row">
-                    <div class="col-5">
+            <div class="container" style="border:solid">
+                <div class="row" style="border:solid">
+                    <div class="col" style="border:solid">
                         <h3 class="text-info">Room List</h3>
                     </div>
-                    <div class="col-3">
+                    <div class="col">
                         <button class="btn btn-info form-control" @onclick="AddNewRoom">
                             Add New Room
                         </button>
                     </div>
                 </div>
-                <div class="row pt-4">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>Room Name</th>                                
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var obj in rooms)
-                            {
-                            <tr>
-                                <td>@obj.Id</td>
-                                <td>@obj.Name</td>                                
-                                <td>
-                                    <button class="btn btn-primary" style="width:150px" @onclick="(()=> EditRoom(obj))">
-                                        Edit
-                                    </button>
-                                </td>
-                            </tr>
-                            }
-                        </tbody>
-                    </table>
+                <div class="row">
+                    <div class="col">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Room Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var obj in rooms)
+                                {
+                                    <tr>
+                                        <td>@obj.Id</td>
+                                        <td>@obj.Name</td>
+                                        <td>
+                                            <button class="btn btn-primary" style="width:150px" @onclick="(()=> EditRoom(obj))">
+                                                Edit
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col">
+
+                    </div>
                 </div>
             </div>
         }

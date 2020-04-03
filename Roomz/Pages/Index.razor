@@ -6,11 +6,10 @@
 @inject ITableChangeBroadcastService ScheduleService
 @implements IDisposable
 @inherits OwningComponentBase<ScheduleService>
-
 @*List of todays upcoming reservations for chosen room*@
 <div class="d-flex justify-content-between">
     <div class="btn-group">
-        @* Sends user to room details based on room.Id, updates Room Id + Room Name*@
+        @* Sends user to room details based on all room.Id, updates Room Id + Room Name*@
         <NavLink href="@($"/0")" @onclick="@( e => UpdateRoom(0, "Alla"))" class="btn btn-dark pull-right btn-outline-info text-blue">Alla</NavLink>
     </div>
     @foreach (var roomInd in roomsList)
@@ -22,7 +21,58 @@
     }
 </div>
 
-<button class="btn btn-primary" style="width:150px" @onclick="(()=> EditSchedule(schedule))">Edit</button>
+<div><br /><br /></div>
+
+@*<EditForm Model="@objScheduleDate" OnValidSubmit="@ValidSubmit1">
+
+        <div class="col-4">Datum att radera (Funktion ej implementerad)</div>
+        <div class="col-8">
+            <select @onchange="DateSelectionChanged" class="form-control">
+                @foreach (var dateInd in SelectScheduleDates)
+                {
+                    <option value="@dateInd.Id">
+                        @dateInd.AppointmentDateStart.ToShortDateString()
+                    </option>
+                }
+            </select>
+            <div class="row py-2">
+                <div class="offset-4 col">
+                    <button class="btn btn-primary form-control" type="submit">Confirm</button>
+                    <button class="btn btn-warning form-control" type="button" @onclick="@( e => DeleteSchedules(objScheduleDate.AppointmentDateStart.ToShortDateString()))">Confirm Delete</button>
+
+                </div>
+                <div class="col">
+                </div>
+            </div>
+        </div>
+    </EditForm>*@
+
+
+    <div class="col-8">
+        <div>
+            <select id="selectDelDate" class="form-control" @bind="changedDate">
+
+                <option value="" selected>Välj datum att radera</option>
+                @foreach (var dateInd in SelectScheduleDates)
+                {
+                    <option value="@dateInd.AppointmentDateStart.ToShortDateString()">
+                        @dateInd.AppointmentDateStart.ToShortDateString()
+                    </option>
+
+                }
+            </select>
+        </div>
+        <div class="row py-2">
+            <div class="offset-4 col">
+                @*<button class="btn btn-primary form-control" type="submit">Confirm</button>*@
+                <button class="btn btn-warning form-control" type="button" @onclick="@( e => DeleteSchedules(changedDate))">Confirm Delete</button>
+
+            </div>
+            <div class="col">
+            </div>
+        </div>
+    </div>
+
 
 
 @*Header with Room Id | Name (Left) and Present Time (RIGHT)*@
@@ -89,71 +139,53 @@
 
 <div class="copyright">&copy; Copyright @DateTime.Now.Year, Powered by @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription</div>
 
-@if (ShowPopup)
-{
-    <div class="modal" tabindex="-1" style="display:block" role="dialog">
-        <EditForm Model="@objSchedule" OnValidSubmit="@ValidSubmit">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="text-info">Edit Reservation</h3>
-                        <button type="button" class="close" @onclick="ClosePopup">
-                            <span aria-hidden="true">X</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <DataAnnotationsValidator />
-                        <ValidationSummary />
-                        <div class="row">
-                            <div class="col-9">                                
-                                <div class="row py-2">
-                                    <div class="col-4">Room</div>
-                                    <div class="col-8">
-                                        @*<input class="form-control" type="text" @bind="@objSchedule.Room.Name" />*@
-                                        <select @onchange="DateSelectionChanged" class="form-control">
-                                            @foreach (var dateInd in scheduleDates)
-                                            {
-                                                <option value="@dateInd.AppointmentDateStart" selected="@(dateInd.Id == objSchedule.Id ? true : false)">
-                                                    @dateInd.AppointmentDateStart
-                                                </option>
-                                            }
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row py-2">
-                                    <div class="offset-4 col">
-                                        <button class="btn btn-primary form-control" type="submit">Confirm</button>
-                                    </div>
-                                    <div class="col">
-                                        @*<button class="btn btn-danger form-control" @onclick="DeleteSchedules(dtEnd)">Delete</button>*@
-                                        <button class="btn btn-danger form-control" @onclick=@(() => DeleteSchedules("2020-02-07"))>DELETE</button>
-                                    </div>
-                                </div>
-                            </div>
+@*  @if (ShowPopup)
+    {
+        <div class="modal" tabindex="-1" style="display:block" role="dialog">
+            <EditForm Model="@objSchedule" OnValidSubmit="@ValidSubmit2">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="text-info">Edit Reservation</h3>
+                            <button type="button" class="close" @onclick="ClosePopup">
+                                <span aria-hidden="true">X</span>
+                            </button>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </EditForm>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-9">
+                                    <div class="row py-2">*@
+@*droplist was here*@
+@*                                    </div>
+        <div class="row py-2">
+        <div class="offset-4 col"><button class="btn btn-primary form-control" type="submit">Confirm</button></div>
+        <div class="col"><button class="btn btn-danger form-control" @onclick=DeleteSchedules>DELETE</button></div>
     </div>
-}
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </EditForm>
+        </div>
+        }*@
 
 @code{
     IList<Schedule> schedules;
-    List<Schedule> scheduleDates;
-    Schedule objDate = new Schedule();
 
-    Schedule objSchedule = new Schedule();
+    Schedule objScheduleDate = new Schedule();
 
-    bool ShowPopup = false;
+    List<Schedule> SelectScheduleDates;
 
+    //bool ShowPopup = false;
 
     List<Room> roomsList;
     Room room = new Room();
 
     [Parameter] public int thisRoomId { get; set; } = 0;
     [Parameter] public string thisRoomName { get; set; }
-    [Parameter] public string deleteScheduleDate { get; set; }
+    [Parameter] public int deleteScheduleDate { get; set; }
+    [Parameter] public string changedDate { get; set; }
 
     [Parameter] public int RoomId { get; set; }
 
@@ -167,32 +199,32 @@
 
     }
 
-    //void DeleteSchedule()
-    //{
-    //    ShowPopup = false;
-    //    var result = @Service.DeleteSchedule(objSchedule);
-    //    schedules.Clear();
-    //    schedules = @Service.GetSchedules();
-    //}
-
-    private void DeleteSchedules(string dtEnd)
+    void DeleteSchedules(string changedDate)
     {
-        deleteScheduleDate = dtEnd;
-
-        DateTime _dtEnd;
-        if (DateTime.TryParse(dtEnd, out _dtEnd))
-        {
-            var result = @Service.DeleteSchedulesFromDate(_dtEnd);
-
-            schedules.Clear();
-            schedules = Service.GetSchedules();
-
-            if (result)
-            {
-                this.ShouldRender();
-            }
-        }
+        //ShowPopup = false;       
+        var result = @Service.DeleteSchedulesFromDate(changedDate);
+        schedules.Clear();
+        schedules = @Service.GetSchedules();
     }
+
+    //private void DeleteSchedules(string dtEnd)
+    //{
+    //    //deleteScheduleDate = dtEnd;
+
+    //    DateTime _dtEnd;
+    //    if (DateTime.TryParse(dtEnd, out _dtEnd))
+    //    {
+    //        var result = @Service.DeleteSchedulesFromDate(_dtEnd);
+
+    //        schedules.Clear();
+    //        schedules = Service.GetSchedules();
+
+    //        if (result)
+    //        {
+    //            this.ShouldRender();
+    //        }
+    //    }
+    //}
 
     //EventCallback
     protected override void OnInitialized()
@@ -200,7 +232,9 @@
         //Get room name from RoomId
         room = Service.GetRoom(RoomId);
         roomsList = Service.GetRooms();
+        SelectScheduleDates = Service.GetSchedules();
 
+        //Show correct room name at page load
         thisRoomId = room.Id;
         thisRoomName = room.Name;
 
@@ -227,45 +261,61 @@
         });
     }
 
-    void EditSchedule(Schedule schedule)
+    @*void EditSchedule(Schedule schedule)
     {
         objSchedule = schedule;
-        schedules = Service.GetSchedules();
+        SelectScheduleDates = Service.GetSchedules();
+        //objSchedules = Service.GetSchedules();
         ShowPopup = true;
-    }
+    }*@
 
-    public void Dispose()
-    {
-        this.ScheduleService.OnScheduleChanged += this.ScheduleChanged;
-    }
-    void ClosePopup()
-    {
-        // Close popup
-        ShowPopup = false;
-    }
+public void Dispose()
+{
+    this.ScheduleService.OnScheduleChanged += this.ScheduleChanged;
+}
 
-    void ValidSubmit()
-    {
-        var result = false;
-        ShowPopup = false;
-        //result = Service.ConfirmSchedule(objSchedule);
-        //schedules = Service.GetSchedules();
+//void ClosePopup()
+//{
+//    // Close popup
+//    ShowPopup = false;
+//}
 
-        if (objSchedule.Id > 0)
-        {
-            result = Service.UpdateSchedule(objSchedule);
-        }
-        else
-        {
-            result = Service.CreateSchedule(objSchedule);
-        }
-    }
+void ValidSubmit1()
+{
+    changedDate = objScheduleDate.AppointmentDateStart.ToShortDateString();
 
-    void DateSelectionChanged(ChangeEventArgs e)
+    //ShowPopup = false;
+    //objSchedule = Service.GetSchedules();
+    var result = @Service.DeleteSchedulesFromDate(changedDate);
+    schedules.Clear();
+    schedules = @Service.GetSchedules();
+}
+
+@*void ValidSubmit2()
+{
+    //var result = false;
+    ShowPopup = false;
+    //result = Service.ConfirmSchedule(objSchedule);
+    //schedules = Service.GetSchedules();
+
+    //if (objScheduleDate.Id > 0)
+    //{
+    //    result = Service.UpdateSchedule(objScheduleDate);
+    //}
+    //else
+    //{
+    //    result = Service.CreateSchedule(objScheduleDate);
+    //}
+    var result = @Service.DeleteSchedulesFromDate(objSchedule);
+    schedules.Clear();
+    schedules = @Service.GetSchedules();
+}*@
+
+void DateSelectionChanged(ChangeEventArgs e)
+{
+    if (int.TryParse(e.Value.ToString(), out int id))
     {
-        if (int.TryParse(e.Value.ToString(), out int id))
-        {
-            objSchedule.Id = id;
-        }
+        objScheduleDate.Id = id;
     }
+}
 }

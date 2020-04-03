@@ -1,20 +1,13 @@
 ﻿@using Roomz.Data;
 
 
-<div class="col-3">
-    <div class=" card-background card mb-4 align-items-center">
-        @*<div class="card-header">
-            <h4 class="my-0 font-weight-normal text-center">
-                <label style="font-size:23px;color:steelblue;">@room.Name</label>
-            </h4>
-        </div>*@
-        <div class="card-body card-background align-items-center" style="background-color:#F7F7F7">
+<div class="card-body">    
                 <div class="btn-group">
                     @* Sends user to room details based on room.Id*@
                     <NavLink href="@($"/roomzfront/{room.Id}")" class="btn sqbtn pull-right btn-outline-info text-blue">@room.Name</NavLink>
                 </div>
-        </div>
-    </div>
+                @*Break to new row on resize browser*@
+                <div class="break"></div>        
 </div>
 
 @code {
