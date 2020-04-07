@@ -15,24 +15,33 @@
         }
         else
         {
-            <div class="container" style="border:solid">
-                <div class="row" style="border:solid">
-                    <div class="col" style="border:solid">
-                        <h3 class="text-info">Room List</h3>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h3 class="text-info">Rooms List</h3>
                     </div>
-                    <div class="col">
+                </div>
+                <div class="row">
+                    <div class="col-sm-5"></div>
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-3">
                         <button class="btn btn-info form-control" @onclick="AddNewRoom">
-                            Add New Room
+                            Add Room
                         </button>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col">
+                    <div class="col-sm-12"><br /></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-8" style="border-style:solid; border-width:1px; padding:0px">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>Id</th>
                                     <th>Room Name</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -51,9 +60,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="col">
-
-                    </div>
+                    <div class="col-sm-2"></div>
                 </div>
             </div>
         }

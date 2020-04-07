@@ -5,7 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Roomz.Services
 {
@@ -114,11 +115,7 @@ namespace Roomz.Services
         {
             DateTime changedDateStart = Convert.ToDateTime(changedDate);
             DateTime changedDateEnd = Convert.ToDateTime(changedDate).AddDays(1);
-            //var result = _db.Schedules.Where(x => x.AppointmentDateStart.ToShortDateString() == changedDate).ToList();
             var result = _db.Schedules.Where(x => x.AppointmentDateStart >= changedDateStart && x.AppointmentDateStart < changedDateEnd);
-                //.GroupBy(x => x.AppointmentDateStart)
-                //.Select(y => y.OrderByDescending(g => g.AppointmentDateStart )
-                //.FirstOrDefault(p => p.AppointmentDateStart >= changedDateStart && p.AppointmentDateStart < changedDateEnd);
 
             if (result != null)
             {
@@ -130,6 +127,12 @@ namespace Roomz.Services
                 return false;
             }
             return true;
+        }
+
+        // List schedule dates filter only first in each group
+        public List<Schedule> GetSchedulesToDelete()
+        {
+            return _db.Schedules.OrderByDescending(u => u.AppointmentDateStart).ToList();
         }
 
         // Get Room item from database based on RoomId

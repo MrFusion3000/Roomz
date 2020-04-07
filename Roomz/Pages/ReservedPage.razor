@@ -13,13 +13,20 @@
 }
 else
 {
-    <div class="container border p-3">
-        <div class="row">
-            <div class="col-5">
-                <h3 class="text-info">Schedules</h3>
-            </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <h3 class="text-info">Schedules</h3>
         </div>
-        <div class="row pt-4">
+    </div>
+    <div class="row">
+        <div class="col-sm-12"><br /></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12"><br /></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12" style="border-style:solid; border-width:1px; padding:0px">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -30,29 +37,31 @@ else
                         <th>Reservation End</th>
                         <th>Booked by</th>
                         <th>Email</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var schedule in schedules)
                     {
-                    <tr>
-                        <td>@schedule.Room.Name</td>
-                        <td>@schedule.AppointmentDateStart.ToShortDateString()</td>
-                        <td>@schedule.AppointmentDateStart.ToShortTimeString()</td>
-                        <td>@schedule.AppointmentDateEnd.ToShortTimeString()</td>
-                        <td>@schedule.Booker.LastName, @schedule.Booker.FirstName</td>
-                        <td>@schedule.Booker.Email</td>
-                        <td>
-                            <button class="btn btn-primary" style="width:150px" @onclick="(()=> EditSchedule(schedule))">
-                                Edit
-                            </button>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>@schedule.Room.Name</td>
+                            <td>@schedule.AppointmentDateStart.ToShortDateString()</td>
+                            <td>@schedule.AppointmentDateStart.ToShortTimeString()</td>
+                            <td>@schedule.AppointmentDateEnd.ToShortTimeString()</td>
+                            <td>@schedule.Booker.LastName, @schedule.Booker.FirstName</td>
+                            <td>@schedule.Booker.Email</td>
+                            <td>
+                                <button class="btn btn-primary" style="width:150px" @onclick="(()=> EditSchedule(schedule))">
+                                    Edit
+                                </button>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>
         </div>
     </div>
+</div>
 }
 
 @if (ShowPopup)
@@ -78,27 +87,32 @@ else
                                 </div>
                                 <div class="row py-2">
                                     <div class="col-4">Last Name</div>
-                                    <div class="col-8"><input class="form-control" type="text" @bind="@objSchedule.Booker.LastName" readonly />
+                                    <div class="col-8">
+                                        <input class="form-control" type="text" @bind="@objSchedule.Booker.LastName" readonly />
                                     </div>
                                 </div>
                                 <div class="row py-2">
                                     <div class="col-4">Customer Email</div>
-                                    <div class="col-8"><input class="form-control" type="text" @bind="@objSchedule.Booker.Email" readonly />
+                                    <div class="col-8">
+                                        <input class="form-control" type="text" @bind="@objSchedule.Booker.Email" readonly />
                                     </div>
                                 </div>
                                 <div class="row py-2">
                                     <div class="col-4">Reservation Date</div>
-                                    <div class="col-8"><input class="form-control" type="text" value="@objSchedule.AppointmentDateStart.ToShortDateString()" />
+                                    <div class="col-8">
+                                        <input class="form-control" type="text" value="@objSchedule.AppointmentDateStart.ToShortDateString()" />
                                     </div>
                                 </div>
                                 <div class="row py-2">
                                     <div class="col-4">Reservation Start</div>
-                                    <div class="col-8"><input class="form-control" type="text" value="@objSchedule.AppointmentDateStart.ToShortTimeString()" />
+                                    <div class="col-8">
+                                        <input class="form-control" type="text" value="@objSchedule.AppointmentDateStart.ToShortTimeString()" />
                                     </div>
                                 </div>
                                 <div class="row py-2">
                                     <div class="col-4">Reservation End</div>
-                                    <div class="col-8"><input class="form-control" type="text" value="@objSchedule.AppointmentDateEnd.ToShortTimeString()" />
+                                    <div class="col-8">
+                                        <input class="form-control" type="text" value="@objSchedule.AppointmentDateEnd.ToShortTimeString()" />
                                     </div>
                                 </div>
                                 <div class="row py-2">
@@ -135,8 +149,8 @@ else
                                 </div>
                             </div>
                             @*<div class="col-3">
-                                <img src="@convertImageToDisplay(objSchedule.Room.Image)" width="100%" style="border-radius:5px; border:1px solid #bbb9b9;" />
-                            </div>*@
+                                    <img src="@convertImageToDisplay(objSchedule.Room.Image)" width="100%" style="border-radius:5px; border:1px solid #bbb9b9;" />
+                                </div>*@
                         </div>
                     </div>
                 </div>
