@@ -1,12 +1,15 @@
 ﻿@page "/{RoomId:int}"
 
-@using Roomz.Services;
-@using Roomz.Data;
-@using System.Linq;
+@using Roomz.Services
+@using Roomz.Data
+@using System.Linq
+@using System.Data
+
 
 @inject ITableChangeBroadcastService ScheduleService
 @implements IDisposable
 @inherits OwningComponentBase<ScheduleService>
+
 @*List of todays upcoming reservations for chosen room*@
 <div class="d-flex justify-content-between">
     <div class="btn-group">
@@ -109,6 +112,7 @@
 
 <div class="copyright">&copy; Copyright @DateTime.Now.Year, Powered by @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription</div>
 
+@**** Maybe use for Edit Schedule*** *@
 @*  @if (ShowPopup)
     {
         <div class="modal" tabindex="-1" style="display:block" role="dialog">
@@ -125,7 +129,7 @@
                             <div class="row">
                                 <div class="col-9">
                                     <div class="row py-2">*@
-                                        @*droplist was here*@
+@*droplist was here*@
 @*                                    </div>
         <div class="row py-2">
         <div class="offset-4 col"><button class="btn btn-primary form-control" type="submit">Confirm</button></div>
@@ -146,7 +150,6 @@
     Schedule objScheduleDate = new Schedule();
 
     List<Schedule> SelectScheduleDates;
-
 
     //bool ShowPopup = false;
 
@@ -177,39 +180,23 @@
         schedules = @Service.GetSchedules();
     }
 
-    //private void DeleteSchedules(string dtEnd)
-    //{
-    //    //deleteScheduleDate = dtEnd;
-
-    //    DateTime _dtEnd;
-    //    if (DateTime.TryParse(dtEnd, out _dtEnd))
-    //    {
-    //        var result = @Service.DeleteSchedulesFromDate(_dtEnd);
-
-    //        schedules.Clear();
-    //        schedules = Service.GetSchedules();
-
-    //        if (result)
-    //        {
-    //            this.ShouldRender();
-    //        }
-    //    }
-    //}
-
     //EventCallback
     protected override void OnInitialized()
     {
         //Get room name from RoomId
         room = Service.GetRoom(RoomId);
+
         //Get list of all rooms
         roomsList = Service.GetRooms();
+
         //Get filtered list of passed schedule dates 
         SelectScheduleDates = Service.GetSchedulesToDelete();
 
         var queryDatesToDelete = SelectScheduleDates
-                     .GroupBy(x => x.EntityFunctions.TruncateTime(x.AppointmentDateStart)
-                     .Select(g => g.OrderByDescending(x => x.AppointmentDateStart).FirstOrDefault())
-                     .ToList();
+            .GroupBy(x => x.AppointmentDateStart.Date)
+            .Select(g => g.OrderByDescending(x => x.AppointmentDateStart.Date).FirstOrDefault())
+            .ToList();
+
         SelectScheduleDates = queryDatesToDelete;
 
         //Show correct room name at page load
